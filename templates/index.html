@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Question Answering</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin: 20px auto;
+            max-width: 400px;
+        }
+        input[type="file"], input[type="text"] {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #output {
+            margin-top: 20px;
+            color: #555;
+        }
+        #preview {
+            margin-top: 20px;
+            max-width: 100%;
+            max-height: 300px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Visual Question Answering</h1>
+    <form id="qaForm" enctype="multipart/form-data">
+        <input type="file" id="imageInput" name="image" accept="image/*" required>
+        <img id="preview" alt="Image preview will appear here" />
+        <input type="text" id="textInput" name="text" placeholder="Enter your question" required>
+        <button type="submit">Get Answer</button>
+    </form>
+    <div id="output"></div>
+
+    <script>
+        const imageInput = document.getElementById("imageInput");
+        const preview = document.getElementById("preview");
+        const form = document.getElementById("qaForm");
+        const output = document.getElementById("output");
+
+        // Display the selected image
+        imageInput.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = ""; // Clear the preview if no file is selected
+            }
+        });
+
+        // Handle form submission
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    body: formData,
+                });
+                const result = await response.json();
+                if (result.error) {
+                    output.innerHTML = `<p style="color: red;">Error: ${result.error}</p>`;
+                } else {
+                    output.innerHTML = `<p><strong>Question:</strong> ${result.question}</p>
+                                        <p><strong>Answer:</strong> ${result.answer}</p>`;
+                }
+            } catch (error) {
+                output.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
