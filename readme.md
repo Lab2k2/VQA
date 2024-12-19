@@ -1,6 +1,6 @@
-# Project Title
+# Dự án Visual Answering Questioning
 
-Web thực hiện miêu tả ảnh
+Web thực hiện trả lời các câu hỏi liên quan đến hình ảnh.(Câu hỏi tiếng anh do bộ data dùng tiếng anh)
 
 ## Video Demo
 
